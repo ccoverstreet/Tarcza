@@ -1,0 +1,6 @@
+[submodule "vendor/matplotlib-cpp"]
+	path = vendor/matplotlib-cpp
+	url = https://github.com/lava/matplotlib-cpp.git
+[submodule "vendor/eigen"]
+	path = vendor/eigen
+	url = https://gitlab.com/libeigen/eigen
