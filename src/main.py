@@ -32,7 +32,7 @@ def main():
     import time
 
     triangles, parts = parser.parseFile("../assembly_1.obj")
-    ray_positions, ray_directions = tracer.createRays(100000, [0, 0, 0], np.pi, [0, 1, 0])
+    ray_positions, ray_directions = tracer.createRays(int(1E5), [0, 0, 0], np.pi, [0, 1, 0])
 
     plotTriangles(triangles)
 

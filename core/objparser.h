@@ -1,4 +1,5 @@
 // Object parser for Tarcza
+#pragma once
 
 #include <vector>
 #include <fstream>

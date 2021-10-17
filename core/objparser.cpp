@@ -70,8 +70,8 @@ Geometry parseObjFile(const char *filename) {
 	start_tri_index = cur_tri_index;
 
 	//printVector(vertices);
-	printVector(parts);
-	printVector(triangles);
+	//printVector(parts);
+	//printVector(triangles);
 
 	printf("# of vertices: %d\n", vertices.size());
 	printf("# of triangles: %d\n", triangles.size());

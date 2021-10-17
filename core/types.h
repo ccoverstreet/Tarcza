@@ -1,6 +1,8 @@
 #pragma once
 
 #include <Eigen/Dense>
+#include <cstdint>
+#include <vector>
 
 struct Triangle {
 	Eigen::Vector3f v1;
@@ -37,8 +39,31 @@ struct Ray {
 	Eigen::Vector3f pos;
 	Eigen::Vector3f dir;
 
+	Ray(float x, float y, float z, float nx, float ny, float nz) {
+		pos = Eigen::Vector3f(x, y, z);
+		auto tmp = Eigen::Vector3f(nx, ny, nz);
+		dir = tmp / sqrt(tmp.dot(tmp));
+	}
+
+	Ray(Eigen::Vector3f p, Eigen::Vector3f d) {
+		pos = p;
+		dir = d;
+	}
+
 	friend std::ostream &operator<<(std::ostream &output, const Ray &r ) {
 		output << r.pos << "\n" << r.dir << "\n";
 		return output;
 	}
 };
+
+struct Source {
+	Ray unit_ray; // Contains the pos and dir that rays are generated from
+	float cone_angle;
+	size_t n_rays;
+
+	std::vector<Ray> rays;
+};
+
+Source createSource(Ray unit_ray, float cone_angle, size_t n_rays);
+std::vector<Ray> createSourceRays(Ray unit_ray, float cone_angle, size_t n_rays);
+

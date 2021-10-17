@@ -9,5 +9,5 @@
 #include "./objparser.h"
 #include "./types.h"
 
-void tarczaTracingRoutine(Geometry geom, Ray ray);
+void tarczaTracingRoutine(Geometry geom, std::vector<Ray> rays);
 void traceRayPath(Geometry geom, Ray ray);
