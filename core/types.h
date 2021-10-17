@@ -47,7 +47,7 @@ struct Ray {
 
 	Ray(Eigen::Vector3f p, Eigen::Vector3f d) {
 		pos = p;
-		dir = d;
+		dir = d / sqrt(d.dot(d));
 	}
 
 	friend std::ostream &operator<<(std::ostream &output, const Ray &r ) {
@@ -63,6 +63,10 @@ struct Source {
 
 	std::vector<Ray> rays;
 };
+
+
+void saveGeometryGNUPlot(const char *filename, Geometry geom);
+void saveSetupGNUPlot(const char *filename, Geometry geom, std::vector<Source> sources);
 
 Source createSource(Ray unit_ray, float cone_angle, size_t n_rays);
 std::vector<Ray> createSourceRays(Ray unit_ray, float cone_angle, size_t n_rays);
