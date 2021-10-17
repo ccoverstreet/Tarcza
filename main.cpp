@@ -16,7 +16,7 @@ namespace plt = matplotlibcpp;
 
 
 int main() {
-	auto geometry = parseObjFile("Assembly_3.obj");
+	auto geometry = parseObjFile("testfiles/Assembly_3.obj");
 	printf("# of parts: %d\n", geometry.parts.size());
 	printf("# of triangles: %d\n", geometry.triangles.size());
 
@@ -28,7 +28,7 @@ int main() {
 		createSource(unit_ray_2, M_PI / 8, 100)};
 	
 	std::cout << "Saving setup gnuplot script\n";
-	saveSetupGNUPlot("fart35.txt", geometry, sources);
+	saveSetupGNUPlot("setup.gnuplot", geometry, sources);
 
 	tarczaTracingRoutine(geometry, sources);
 
