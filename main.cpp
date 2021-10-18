@@ -10,13 +10,20 @@ namespace plt = matplotlibcpp;
 */
 
 #include <omp.h>
-#include <yaml.h>
+#include <yaml-cpp/yaml.h>
 
 #include "./core/objparser.h"
 #include "./core/tracer.h"
+#include "./core/config.h"
 
+int main(int argc, char **argv) {
+	if (argc < 2) {
+		std::cout << "Usage: Tarcza <inputfilename>\n";
+		return 0;
+	}
 
-int main() {
+	auto config = createTarczaConfig(argv[1]);
+
 	auto geometry = parseObjFile("testfiles/Assembly_3.obj");
 	printf("# of parts: %d\n", geometry.parts.size());
 	printf("# of triangles: %d\n", geometry.triangles.size());
@@ -27,7 +34,7 @@ int main() {
 
 	//std::vector<Source> sources = {createSource(unit_ray, M_PI, 1E4),
 	//	createSource(unit_ray_2, M_PI * 2, 100)};
-	std::vector<Source> sources = {createSource(unit_ray, M_PI / 4, 1E8)};
+	std::vector<Source> sources = {createSource(unit_ray, M_PI / 4, 1E1)};
 
 	for (auto src : sources) {
 		std::cout << src;

@@ -1,4 +1,8 @@
-assemblyfile: "testfiles/Assembly_3.obj"
+assemblyFile: "testfiles/Assembly_3.obj"
+sources:
+  - unitRay: [0, 0, 0, 1, 0, 0]
+    coneAngle: 3.14
+    numberOfRays: 100
 
 
 

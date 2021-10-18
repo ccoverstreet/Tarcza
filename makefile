@@ -12,4 +12,4 @@ $(LIBYAML):
 	cd vendor/yaml-cpp/build && cmake .. && make
 
 run: driver
-	./driver
+	./driver input.yaml

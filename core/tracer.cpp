@@ -7,10 +7,11 @@ void tarczaTracingRoutine(Geometry geom, std::vector<Source> sources) {
 	auto start = omp_get_wtime();
 	printf("Start at: %d\n", start);
 
-	for (auto src : sources) {
+	for (size_t src_n = 0; src_n < sources.size(); src_n++ ) {
+		auto src = sources[src_n];
 		#pragma omp parallel for
-		for (auto ray : src.rays) {
-			traceRayPath(geom, ray);
+		for (size_t ray_n = 0; ray_n < src.rays.size(); ray_n++) {
+			traceRayPath(geom, src.rays[ray_n]);
 		}
 	}
 
