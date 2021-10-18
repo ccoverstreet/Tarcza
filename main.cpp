@@ -22,28 +22,22 @@ int main(int argc, char **argv) {
 		return 0;
 	}
 
-	auto config = createTarczaConfig(argv[1]);
+	TarczaConfig config = createTarczaConfig(argv[1]);
 
-	auto geometry = parseObjFile("testfiles/Assembly_3.obj");
-	printf("# of parts: %d\n", geometry.parts.size());
-	printf("# of triangles: %d\n", geometry.triangles.size());
-
-	// Create sources
-	Ray unit_ray(7, 0, 3, -1, 0, -0.4);
-	Ray unit_ray_2(-7, 0, 3, 1, 0, -0.5);
-
-	//std::vector<Source> sources = {createSource(unit_ray, M_PI, 1E4),
-	//	createSource(unit_ray_2, M_PI * 2, 100)};
-	std::vector<Source> sources = {createSource(unit_ray, M_PI / 4, 1E1)};
-
-	for (auto src : sources) {
-		std::cout << src;
+	for (auto part : config.geometry.parts) {
+		std::cout << part.second.name << "\n";
+		std::cout << part.second.start << "\n";
+		std::cout << part.second.end << "\n";
+		std::cout << part.second.material << "\n";
 	}
-	
-	std::cout << "Saving setup gnuplot script\n";
-	saveSetupGNUPlot("setup.gnuplot", geometry, sources);
 
-	tarczaTracingRoutine(geometry, sources);
+	printf("# of parts: %d\n", config.geometry.parts.size());
+	printf("# of triangles: %d\n", config.geometry.triangles.size());
+
+	std::cout << "Saving setup gnuplot script\n";
+	saveSetupGNUPlot("setup.gnuplot", config.geometry, config.sources);
+
+	tarczaTracingRoutine(config.geometry, config.sources);
 
 	return 0;
 }

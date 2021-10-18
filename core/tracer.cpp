@@ -1,6 +1,8 @@
 #include "./tracer.h"
 
 #include <omp.h>
+#include <map>
+
 
 void tarczaTracingRoutine(Geometry geom, std::vector<Source> sources) {
 	printf("\nTarcza Tracing Routine\n");
@@ -9,9 +11,11 @@ void tarczaTracingRoutine(Geometry geom, std::vector<Source> sources) {
 
 	for (size_t src_n = 0; src_n < sources.size(); src_n++ ) {
 		auto src = sources[src_n];
+		std::map<std::string, float> cross_section_map;
+		cross_section_map.insert(std::pair<std::string, float>("Pb", 1E-3));
 		#pragma omp parallel for
 		for (size_t ray_n = 0; ray_n < src.rays.size(); ray_n++) {
-			traceRayPath(geom, src.rays[ray_n]);
+			traceRayPath(geom, src.rays[ray_n], cross_section_map);
 		}
 	}
 
@@ -19,10 +23,9 @@ void tarczaTracingRoutine(Geometry geom, std::vector<Source> sources) {
 	printf("End at: %d\n", end);
 
 	printf("Time taken to trace rays: %f \n", (end - start));
-	//printf("Time per ray: %f\n", (end-start) / float(rays.size()));
 }
 
-void traceRayPath(Geometry geom, Ray ray) {					
+void traceRayPath(Geometry geom, Ray ray, std::map<std::string, float> cross_sections) {					
 	uint32_t count = 0;
 	double sum = 0;
 
@@ -48,9 +51,6 @@ void traceRayPath(Geometry geom, Ray ray) {
 
 		bool is_inside = check_1 > 0 && check_2 >= 0 && check_3 >= 0;
 
-		//printf("Checks: %f %f %f -> %d -> Pos: %f %f %f\n", 
-		//		check_1, check_2, check_3, is_inside, pos_int[0], pos_int[1], pos_int[2]);
-		
 		auto x = tri.norm.dot(ray.dir) * tri.v1;
 		auto y = x.dot(ray.dir);
 		sum += y;

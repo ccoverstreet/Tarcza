@@ -1,8 +1,13 @@
 assemblyFile: "testfiles/Assembly_3.obj"
+
+# Maps the part or material name from OBJ file to a userdefined material
+partNameMap:
+  "Part 1": "Pb"
+  "Part 2": "Ge"
+
 sources:
-  - unitRay: [0, 0, 0, 1, 0, 0]
-    coneAngle: 3.14
-    numberOfRays: 100
-
-
+  - unitRay: [5, 0, 3, -1, 0, -0.5]
+    coneAngle: 1.5
+    numberOfRays: 1000000
+    energy: 662
 

@@ -8,8 +8,10 @@
 #include <Eigen/Dense>
 #include <cstdint>
 
+#include <yaml-cpp/yaml.h>
+
 #include "./types.h"
 #include "./helpers.h"
 
 
-Geometry parseObjFile(const char *filename);
+Geometry parseObjFile(const char *filename, YAML::Node partname_map);

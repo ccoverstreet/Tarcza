@@ -9,7 +9,7 @@ float coneAngleToArea(float cone_angle) {
 	return 2*float(M_PI)*(1 - cos(cone_angle/2));
 }
 
-Source createSource(Ray unit_ray, float cone_angle, size_t n_rays) {
+Source createSource(Ray unit_ray, float cone_angle, size_t n_rays, float energy) {
 	Source src = {unit_ray, cone_angle, n_rays, coneAngleToArea(cone_angle),{}};
 	src.rays = createSourceRays(unit_ray, cone_angle, n_rays);
 
@@ -37,8 +37,10 @@ std::vector<Ray> createSourceRays(Ray unit_ray, float cone_angle, size_t n_rays)
 		{dir.z(), j.z(), k.z()}
 	};
 
+	std::cout << n_rays << "\n";
+
 	for (size_t i = 0; i < n_rays; i++) {
-		float x = x_max - (i/float(n_rays - 1)) * (x_max - x_min);
+		float x = x_max - (float(i)/float(n_rays - 1)) * (x_max - x_min);
 		float radius = sqrt(1 - x * x);
 
 		float theta = phi * i;
@@ -82,7 +84,7 @@ void saveGeometryGNUPlot(const char *filename, Geometry geom) {
 	gnu.close();
 }
 
-void saveSetupGNUPlot(const char *filename, Geometry geom, std::vector<Source> sources) {
+void saveSetupGNUPlot(const char *filename, Geometry geom, std::vector<Source> &sources) {
 	std::ofstream gnu(filename);
 
 	// Script header
@@ -100,12 +102,10 @@ void saveSetupGNUPlot(const char *filename, Geometry geom, std::vector<Source> s
 		size_t ray_inc = 1;
 		if (sources[i].rays.size() > 1E3) {
 			auto k = sources[i].rays.size();
-			std::cout << "Limiter " << k << "\n";
+			std::cout << "Limiter " << k / 1E3 << "\n";
 
 			ray_inc	= k / 1E3;
 		}
-
-		std::cout << "Ray inc " << ray_inc << "\n";
 
 		for (size_t j = 0; j < sources[i].rays.size(); j += ray_inc) {
 			writeRayToFile(sources[i].rays[j], gnu);

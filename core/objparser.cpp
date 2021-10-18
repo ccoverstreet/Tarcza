@@ -4,18 +4,19 @@
 #include <iostream>
 #include <cstdint>
 #include <cmath>
+#include <map>
 
-Geometry parseObjFile(const char *filename) {
+Geometry parseObjFile(const char *filename, YAML::Node partname_map) {
 	std::fstream input_file(filename);
 
 	std::vector<Eigen::Vector3f> vertices;
 	std::vector<Triangle> triangles;
-	std::vector<Part> parts;
+	std::map<std::string, Part> part_map;
 
 	std::string cur_part = "";
 		
-	uint32_t cur_tri_index = 0;
-	uint32_t start_tri_index = 0;
+	size_t cur_tri_index = 0;
+	size_t start_tri_index = 0;
 
 	while (!input_file.fail()) {
 		std::string desc;
@@ -28,7 +29,8 @@ Geometry parseObjFile(const char *filename) {
 			}
 
 			if (cur_part != "") {
-				parts.push_back(Part{cur_part, start_tri_index, cur_tri_index});
+				std::string mat = partname_map[cur_part].as<std::string>();
+				part_map.insert(std::pair<std::string, Part>(cur_part, Part(cur_part, start_tri_index, cur_tri_index, mat)));
 				start_tri_index = cur_tri_index;
 			}
 
@@ -63,18 +65,15 @@ Geometry parseObjFile(const char *filename) {
 			//std::cout << norm << "\n\n";
 
 			triangles.push_back(Triangle{vect1, vect2, vect3, norm});
+			cur_tri_index += 1;
 		}
 	}
 
-	parts.push_back(Part{cur_part, start_tri_index, cur_tri_index});
-	start_tri_index = cur_tri_index;
-
-	//printVector(vertices);
-	//printVector(parts);
-	//printVector(triangles);
+	std::string mat = partname_map[cur_part].as<std::string>();
+	part_map.insert(std::pair<std::string, Part>(cur_part, Part(cur_part, start_tri_index, cur_tri_index, mat)));
 
 	printf("# of vertices: %d\n", vertices.size());
 	printf("# of triangles: %d\n", triangles.size());
 
-	return Geometry{triangles, parts};
+	return Geometry{triangles, part_map};
 }

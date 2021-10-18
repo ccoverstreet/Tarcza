@@ -2,6 +2,7 @@
 
 #include <Eigen/Dense>
 #include <cstdint>
+#include <map>
 #include <vector>
 
 struct Triangle {
@@ -21,8 +22,16 @@ struct Triangle {
 
 struct Part {
 	std::string name;
-	uint32_t start;
-	uint32_t end;
+	size_t start;
+	size_t end;
+	std::string material;
+
+	Part(std::string in_name, size_t in_start, size_t in_end, std::string mat) {
+		name = in_name;
+		start = in_start;
+		end = in_end;
+		material = mat;
+	}
 
 	friend std::ostream &operator<<(std::ostream &output, const Part &p ) {
 		output << "\"" << p.name << "\" " << p.start << " " << p.end; 
@@ -32,7 +41,7 @@ struct Part {
 
 struct Geometry {
 	std::vector<Triangle> triangles;
-	std::vector<Part> parts;
+	std::map<std::string, Part> parts;
 };
 
 struct Ray {
@@ -60,6 +69,7 @@ struct Source {
 	Ray unit_ray; // Contains the pos and dir that rays are generated from
 	float cone_angle;
 	size_t n_rays;
+	float energy;
 	float area; // Emission area
 
 	std::vector<Ray> rays;
@@ -75,8 +85,8 @@ struct Source {
 
 
 void saveGeometryGNUPlot(const char *filename, Geometry geom);
-void saveSetupGNUPlot(const char *filename, Geometry geom, std::vector<Source> sources);
+void saveSetupGNUPlot(const char *filename, Geometry geom, std::vector<Source> &sources);
 
-Source createSource(Ray unit_ray, float cone_angle, size_t n_rays);
+Source createSource(Ray unit_ray, float cone_angle, size_t n_rays, float energy);
 std::vector<Ray> createSourceRays(Ray unit_ray, float cone_angle, size_t n_rays);
 

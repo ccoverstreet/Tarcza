@@ -8,6 +8,7 @@
 
 #include "./objparser.h"
 #include "./types.h"
+#include <map>
 
 void tarczaTracingRoutine(Geometry geom, std::vector<Source> rays);
-void traceRayPath(Geometry geom, Ray ray);
+void traceRayPath(Geometry geom, Ray ray, std::map<std::string, float> cross_sections);
