@@ -51,6 +51,10 @@ void traceRayPath(Geometry geom, Ray ray, std::map<std::string, float> cross_sec
 
 		bool is_inside = check_1 > 0 && check_2 >= 0 && check_3 >= 0;
 
+		if (!is_inside) {
+			continue;
+		}
+
 		auto x = tri.norm.dot(ray.dir) * tri.v1;
 		auto y = x.dot(ray.dir);
 		sum += y;

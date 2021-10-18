@@ -8,6 +8,6 @@ partNameMap:
 sources:
   - unitRay: [5, 0, 3, -1, 0, -0.5]
     coneAngle: 1.5
-    numberOfRays: 1000000
+    numberOfRays: 2
     energy: 662
 
