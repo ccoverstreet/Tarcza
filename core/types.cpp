@@ -4,8 +4,13 @@
 #include <iostream>
 #include <fstream>
 
+// Returns emission area in radians
+float coneAngleToArea(float cone_angle) {
+	return 2*float(M_PI)*(1 - cos(cone_angle/2));
+}
+
 Source createSource(Ray unit_ray, float cone_angle, size_t n_rays) {
-	Source src = {unit_ray, cone_angle, n_rays, {}};
+	Source src = {unit_ray, cone_angle, n_rays, coneAngleToArea(cone_angle),{}};
 	src.rays = createSourceRays(unit_ray, cone_angle, n_rays);
 
 	return src;

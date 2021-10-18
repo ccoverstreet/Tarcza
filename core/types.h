@@ -60,8 +60,17 @@ struct Source {
 	Ray unit_ray; // Contains the pos and dir that rays are generated from
 	float cone_angle;
 	size_t n_rays;
+	float area; // Emission area
 
 	std::vector<Ray> rays;
+
+	friend std::ostream &operator<<(std::ostream &output, const Source &s ) {
+		output << "Unit ray:\n"  << s.unit_ray.pos << "\n" << s.unit_ray.dir << "\n";
+		output << "Cone angle (radians): " << s.cone_angle << "\n";
+		output << "Number of rays: " << s.n_rays << "\n";
+		output << "Emission area: " << s.area << "\n";
+		return output;
+	}
 };
 
 
