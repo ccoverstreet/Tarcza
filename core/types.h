@@ -50,7 +50,6 @@ struct Source {
 	size_t n_rays;
 	float energy;
 	float area; // Emission area
-
 	Eigen::Matrix<float, 3, 3> rot_matrix;
 
 	Source(Ray unit_ray, float cone_angle, size_t n_rays, float energy);
@@ -64,5 +63,4 @@ struct Source {
 void saveGeometryGNUPlot(const char *filename, Geometry geom);
 void saveSetupGNUPlot(const char *filename, Geometry geom, std::vector<Source> &sources);
 
-std::vector<Ray> createSourceRays(Ray unit_ray, float cone_angle, size_t n_rays);
 

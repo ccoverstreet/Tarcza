@@ -1,5 +1,4 @@
 #include "./types.h"
-
 #include <cmath>
 #include <iostream>
 #include <fstream>
@@ -46,7 +45,6 @@ Part::Part(std::string in_name, size_t in_start, size_t in_end, std::string mat)
 
 std::string Geometry::getMaterial(size_t index) {
 	for (auto partpair : parts) {
-		std::cout << partpair.second << "\n";
 		if (index >= partpair.second.start && index < partpair.second.end) {
 			return partpair.second.material;
 		}
@@ -89,9 +87,21 @@ Source::Source(Ray in_unit_ray, float in_cone_angle, size_t in_n_rays, float in_
 	unit_ray = in_unit_ray;
 	area = coneAngleToArea(cone_angle);
 
-	auto norm1 = in_unit_ray.dir.cross(Eigen::Vector3f(1, 0, 0));
+	auto test_vec = Eigen::Vector3f(1, 0, 0);
+
+	// Change comparison vector if too close to <1, 0, 0>
+	if (abs(test_vec.dot(in_unit_ray.dir)) > 0.5) {
+		test_vec = Eigen::Vector3f(0, 1, 0);
+	}
+
+	// Generate fake axes
+	auto norm1 = in_unit_ray.dir.cross(test_vec);
 	auto j = in_unit_ray.dir.cross(norm1);
 	auto k = in_unit_ray.dir.cross(j);
+
+	// Normalize fake axes
+	j = j / sqrt(j.dot(j));
+	k = k / sqrt(k.dot(k));
 
 	Eigen::Matrix<float, 3, 3> R {
 		{in_unit_ray.dir.x(), j.x(), k.x()},
@@ -99,14 +109,13 @@ Source::Source(Ray in_unit_ray, float in_cone_angle, size_t in_n_rays, float in_
 		{in_unit_ray.dir.z(), j.z(), k.z()}
 	};
 
-	std::cout << in_unit_ray << "\n";
 	std::cout << "Rot Matrix: " << R << "\n";
 
 	rot_matrix = R;
 }
 
 Ray Source::generateRay(size_t ray_n) {
-	float phi = M_PI * (3.0 - sqrt(5.0));
+	float phi = M_PI * (1 + sqrt(5.0)) / 2;
 
 	float x_max = 1.0;
 	float x_min = cos(cone_angle / 2);
@@ -132,50 +141,6 @@ Ray Source::generateRay(size_t ray_n) {
 	return Ray(pos, res);
 }
 
-std::vector<Ray> createSourceRays(Ray unit_ray, float cone_angle, size_t n_rays) {
-	// Create arrays for all samples
-	std::vector<Ray> rays;
-	auto dir = unit_ray.dir;
-	auto pos = unit_ray.pos;
-
-	float phi = M_PI * (3.0 - sqrt(5.0));
-
-	float x_max = 1.0;
-	float x_min = cos(cone_angle / 2);
-
-	auto norm1 = dir.cross(Eigen::Vector3f(1, 0, 0));
-	auto j = dir.cross(norm1);
-	auto k = dir.cross(j);
-
-	Eigen::Matrix<float, 3, 3> R {
-		{dir.x(), j.x(), k.x()},
-		{dir.y(), j.y(), k.y()},
-		{dir.z(), j.z(), k.z()}
-	};
-
-	std::cout << n_rays << "\n";
-
-	for (size_t i = 0; i < n_rays; i++) {
-		float x = 1;
-		if (n_rays != 1) {
-			x = x_max - (float(i)/float(n_rays - 1)) * (x_max - x_min);
-		}
-		float radius = sqrt(1 - x * x);
-
-		float theta = phi * i;
-
-		float y = cos(theta) * radius;
-		float z = sin(theta) * radius;
-
-		Eigen::Vector3f v(x, y, z);
-		Eigen::Vector3f res = R * v;
-
-		rays.push_back(Ray(pos, res));
-	}		
-
-	return rays;
-}
-
 void writeTriangleToFile(Triangle tri, std::ofstream &os) {
 	os << tri.v1.x() << " " << tri.v1.y() << " " << tri.v1.z() << "\n";
 	os << tri.v2.x() << " " << tri.v2.y() << " " << tri.v2.z() << "\n";
@@ -186,8 +151,7 @@ void writeTriangleToFile(Triangle tri, std::ofstream &os) {
 }
 
 void writeRayToFile(Ray ray, std::ofstream &os) {
-	float k = 10;
-	std::cout << "Generated: " << ray << "\n";
+	float k = 10; // Arbitrary scaling value
 	Eigen::Vector3f endpoint = ray.pos + (k * ray.dir);
 	os << ray.pos.x() << " " << ray.pos.y() << " " << ray.pos.z() << "\n";
 	os << endpoint.x() << " " << endpoint.y() << " " << endpoint.z() << "\n";

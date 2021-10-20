@@ -1,12 +1,11 @@
-assemblyFile: "testfiles/Assembly_3.obj"
+assemblyFile: "testfiles/Tarcza_Validation_1.obj"
 
 # Maps the part or material name from OBJ file to a userdefined material
 partNameMap:
-  "Part 1": "Pb"
-  "Part 2": "Ge"
+  "Part 1": "Ge"
 
 sources:
-  - unitRay: [5, 0, 0, 1, 0, 0]
-    coneAngle: 3.14
+  - unitRay: [0, 5, 0, 0, -1, 0]
+    coneAngle: 0.8
     numberOfRays: 1000
     energy: 0.662

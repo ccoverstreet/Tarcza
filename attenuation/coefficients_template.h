@@ -10,6 +10,6 @@ struct CrossSectionData {
 	float Sig_pe; // photoelectric macroscopic cross section
 };
 
-std::map<std::string, std::vector<CrossSectionData>> m = {
+std::map<std::string, std::vector<CrossSectionData>> COEFF_DATABASE = {
 ATTEN_DATA
 };
