@@ -9,4 +9,4 @@ sources:
   - unitRay: [0, -100, 0, 0, 1, 0]
     coneAngle: 0.3
     numberOfRays: 1000000
-    energy: 0.662
+    energy: 0.001
