@@ -11,13 +11,7 @@ struct Triangle {
 	Eigen::Vector3f v3;
 	Eigen::Vector3f norm;
 
-	friend std::ostream &operator<<(std::ostream &output, const Triangle &t ) {
-		output << "\nv1\n " << t.v1 <<"\n"; 
-		output << "v2\n" << t.v2 << "\n"; 
-		output << "v3\n" << t.v3 << "\n"; 
-		output << "norm\n" << t.norm << "\n"; 
-		return output;
-	}
+	friend std::ostream &operator<<(std::ostream &output, const Triangle &t); 
 };
 
 struct Part {
@@ -26,43 +20,28 @@ struct Part {
 	size_t end;
 	std::string material;
 
-	Part(std::string in_name, size_t in_start, size_t in_end, std::string mat) {
-		name = in_name;
-		start = in_start;
-		end = in_end;
-		material = mat;
-	}
+	Part(std::string in_name, size_t in_start, size_t in_end, std::string mat);
 
-	friend std::ostream &operator<<(std::ostream &output, const Part &p ) {
-		output << "\"" << p.name << "\" " << p.start << " " << p.end; 
-		return output;
-	}
+	friend std::ostream &operator<<(std::ostream &output, const Part &p);
 };
 
 struct Geometry {
 	std::vector<Triangle> triangles;
 	std::map<std::string, Part> parts;
+
+	std::string getMaterial(size_t index); // returns material string for given part
 };
 
 struct Ray {
 	Eigen::Vector3f pos;
 	Eigen::Vector3f dir;
 
-	Ray(float x, float y, float z, float nx, float ny, float nz) {
-		pos = Eigen::Vector3f(x, y, z);
-		auto tmp = Eigen::Vector3f(nx, ny, nz);
-		dir = tmp / sqrt(tmp.dot(tmp));
-	}
+	Ray(float x, float y, float z, float nx, float ny, float nz);
+	Ray(Eigen::Vector3f p, Eigen::Vector3f d);
+	Ray(const Ray &ray);
+	Ray();
 
-	Ray(Eigen::Vector3f p, Eigen::Vector3f d) {
-		pos = p;
-		dir = d / sqrt(d.dot(d));
-	}
-
-	friend std::ostream &operator<<(std::ostream &output, const Ray &r ) {
-		output << r.pos << "\n" << r.dir << "\n";
-		return output;
-	}
+	friend std::ostream &operator<<(std::ostream &output, const Ray &r);
 };
 
 struct Source {
@@ -72,21 +51,18 @@ struct Source {
 	float energy;
 	float area; // Emission area
 
-	std::vector<Ray> rays;
+	Eigen::Matrix<float, 3, 3> rot_matrix;
 
-	friend std::ostream &operator<<(std::ostream &output, const Source &s ) {
-		output << "Unit ray:\n"  << s.unit_ray.pos << "\n" << s.unit_ray.dir << "\n";
-		output << "Cone angle (radians): " << s.cone_angle << "\n";
-		output << "Number of rays: " << s.n_rays << "\n";
-		output << "Emission area: " << s.area << "\n";
-		return output;
-	}
+	Source(Ray unit_ray, float cone_angle, size_t n_rays, float energy);
+
+	Ray generateRay(size_t ray_n);
+
+	friend std::ostream &operator<<(std::ostream &output, const Source &s);
 };
 
 
 void saveGeometryGNUPlot(const char *filename, Geometry geom);
 void saveSetupGNUPlot(const char *filename, Geometry geom, std::vector<Source> &sources);
 
-Source createSource(Ray unit_ray, float cone_angle, size_t n_rays, float energy);
 std::vector<Ray> createSourceRays(Ray unit_ray, float cone_angle, size_t n_rays);
 

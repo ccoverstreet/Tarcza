@@ -2,6 +2,8 @@
 
 #include <omp.h>
 #include <map>
+#include <algorithm>
+#include "../attenuation/coefficients.h"
 
 
 void tarczaTracingRoutine(Geometry geom, std::vector<Source> sources) {
@@ -14,8 +16,8 @@ void tarczaTracingRoutine(Geometry geom, std::vector<Source> sources) {
 		std::map<std::string, float> cross_section_map;
 		cross_section_map.insert(std::pair<std::string, float>("Pb", 1E-3));
 		#pragma omp parallel for
-		for (size_t ray_n = 0; ray_n < src.rays.size(); ray_n++) {
-			traceRayPath(geom, src.rays[ray_n], cross_section_map);
+		for (size_t ray_n = 0; ray_n < src.n_rays; ray_n++) {
+			traceRayPath(geom, src.generateRay(ray_n), cross_section_map);
 		}
 	}
 
@@ -25,9 +27,24 @@ void tarczaTracingRoutine(Geometry geom, std::vector<Source> sources) {
 	printf("Time taken to trace rays: %f \n", (end - start));
 }
 
+struct Collision {
+	float t_collision;
+	float dir_dot_norm;
+	std::string material;
+};
+
+
+// TODO: Replace comparison with legitamate float compare
+bool sortCollision(const Collision &a, const Collision &b) {
+	if (a.t_collision == b.t_collision) {
+		return a.dir_dot_norm > b.dir_dot_norm;
+	}
+
+	return a.t_collision < b.t_collision;
+}
+
 void traceRayPath(Geometry geom, Ray ray, std::map<std::string, float> cross_sections) {					
-	uint32_t count = 0;
-	double sum = 0;
+	std::vector<Collision> collisions;
 
 	for (size_t i = 0; i < geom.triangles.size(); i++) {
 		auto tri = geom.triangles[i];
@@ -50,14 +67,21 @@ void traceRayPath(Geometry geom, Ray ray, std::map<std::string, float> cross_sec
 		float check_3 = (tri.v1 - tri.v3).cross(pos_int - tri.v3).dot(tri.norm);
 
 		bool is_inside = check_1 > 0 && check_2 >= 0 && check_3 >= 0;
+		printf("Triangle %d: %d\n", i, is_inside);
 
 		if (!is_inside) {
 			continue;
 		}
 
-		auto x = tri.norm.dot(ray.dir) * tri.v1;
-		auto y = x.dot(ray.dir);
-		sum += y;
-		count += 1;
+		collisions.push_back(Collision{t_intersection, n_dot_d, geom.getMaterial(i)});
+	}
+
+	std::sort(collisions.begin(), collisions.end(), sortCollision);
+
+	for (auto col : collisions) {
+		std::cout << "\n";
+		std::cout << col.material << "\n";
+		std::cout << col.t_collision << "\n";
+		std::cout << col.dir_dot_norm << "\n";
 	}
 }

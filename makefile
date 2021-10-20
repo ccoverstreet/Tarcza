@@ -4,8 +4,11 @@ LIBRARYDIRS = -Lvendor/yaml-cpp/build
 SOURCES = main.cpp core/*.cpp 
 LIBYAML = vendor/yaml-cpp/build/libyaml-cpp.a
 
-driver: *.cpp core/*.cpp core/*.h $(LIBYAML)
+driver: *.cpp core/*.cpp core/*.h $(LIBYAML) attenuation/coefficients.h
 	g++ $(FLAGS) $(INCLUDES) $(SOURCES) $(LIBRARYDIRS) -lyaml-cpp -o driver
+
+attenuation/coefficients.h: attenuation/data/* attenuation/coefficients_template.h
+	cd attenuation && python3 pack.py
 
 $(LIBYAML):
 	mkdir -p vendor/yaml-cpp/build

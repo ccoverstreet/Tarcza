@@ -2,13 +2,6 @@
 #include <vector>
 #include <fstream>
 
-/*
-#define WITHOUT_NUMPY 1
-#include "vendor/matplotlib-cpp/matplotlibcpp.h"
-#include <Eigen/Dense>
-namespace plt = matplotlibcpp;
-*/
-
 #include <omp.h>
 #include <yaml-cpp/yaml.h>
 

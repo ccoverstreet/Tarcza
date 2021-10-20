@@ -51,7 +51,7 @@ TarczaConfig createTarczaConfig(const char *filename) {
 
 		std::cout << unit_ray;
 
-		sources.push_back(createSource(unit_ray, cone_angle, n_rays, energy));
+		sources.push_back(Source(unit_ray, cone_angle, n_rays, energy));
 	}
 
 	model_data.sources = sources;
