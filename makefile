@@ -4,8 +4,8 @@ LIBRARYDIRS = -Lvendor/yaml-cpp/build
 SOURCES = main.cpp core/*.cpp 
 LIBYAML = vendor/yaml-cpp/build/libyaml-cpp.a
 
-driver: *.cpp core/*.cpp core/*.h $(LIBYAML) attenuation/coefficients.h
-	g++ $(FLAGS) $(INCLUDES) $(SOURCES) $(LIBRARYDIRS) -lyaml-cpp -o driver
+Tarcza: *.cpp core/*.cpp core/*.h $(LIBYAML) attenuation/coefficients.h
+	g++ $(FLAGS) $(INCLUDES) $(SOURCES) $(LIBRARYDIRS) -lyaml-cpp -o Tarcza
 
 attenuation/coefficients.h: attenuation/data/* attenuation/coefficients_template.h
 	cd attenuation && python3 pack.py
@@ -14,5 +14,5 @@ $(LIBYAML):
 	mkdir -p vendor/yaml-cpp/build
 	cd vendor/yaml-cpp/build && cmake .. && make
 
-run: driver
-	./driver input.yaml
+run: Tarcza
+	./Tarcza input.yaml

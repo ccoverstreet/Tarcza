@@ -1,8 +1,9 @@
-assemblyFile: "testfiles/Tarcza_Validation_1.obj"
+assemblyFile: "testfiles/Tarcza_Validation_Ge_Only.obj"
 
 # Maps the part or material name from OBJ file to a userdefined material
 partNameMap:
   "Part 1": "Ge"
+  "Part 2": "Pb"
 
 sources:
   - unitRay: [0, 5, 0, 0, -1, 0]

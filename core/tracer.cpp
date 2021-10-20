@@ -28,6 +28,16 @@ AttenCoeff calculateAttenuationCoeffs(std::string material, float energy) {
 	auto total_atten = linearInterpolate(energy, coeffData[lower_index].E, coeffData[lower_index].Sig_t, coeffData[lower_index + 1].E, coeffData[lower_index + 1].Sig_t);
 	auto pe_atten = linearInterpolate(energy, coeffData[lower_index].E, coeffData[lower_index].Sig_pe, coeffData[lower_index + 1].E, coeffData[lower_index + 1].Sig_pe);
 
+	if (material == "Ge") {
+		total_atten = total_atten * 5.323;
+		pe_atten = pe_atten * 5.323;
+	} else if (material == "Pb") {
+		total_atten = total_atten * 11.34;
+		pe_atten = pe_atten * 11.34;
+	}
+
+	std::cout << total_atten << " " << pe_atten << "\n";
+
 	return AttenCoeff{total_atten, pe_atten};
 }
 
@@ -50,7 +60,7 @@ void tarczaTracingRoutine(Geometry geom, std::vector<Source> sources) {
 		auto coeff_map = createCoeffMapForEnergy(sources[src_n].energy, geom.parts);
 
 		float contribution_sum = 0;
-		float area_per_ray = sources[src_n].area / float(sources[src_n].n_rays);
+		float area_per_ray = sources[src_n].area / float(sources[src_n].n_rays) / (4 * M_PI);
 		std::cout << "Area per ray: " << area_per_ray << "\n";
 		#pragma omp parallel for reduction(+: contribution_sum)
 		for (size_t ray_n = 0; ray_n < src.n_rays; ray_n++) {

@@ -22,7 +22,9 @@ def generateHeaderString(files):
     output = ""
 
     for i in range(len(files)):
-        elem = files[i].split(".")[0]
+        split_name = files[i][:-3].split("_")
+        elem = split_name[0]
+        density = split_name[1]
         data = np.genfromtxt("data/"+files[i], skip_header=3) 
 
         output += "\t{\"" + elem + "\", "
