@@ -6,12 +6,7 @@ Currently, the parser only supports OnShape-style OBJ file outputs. It seems lik
 
 ## Tasks
 
-1. Create calculation function for ray intersections and determine what parts correspond to what region
-	- This function would need to correlate the index of the triangle intersected and the part
-	- A future YAML file will contain the mapping from part to real material
-2. Establish YAMl input file and parsing
-	- Will likely use jbeder/yaml-cpp
 3. Validate results with comparisons to prior work and simple analytically solvable examples
 	- Maybe a cylindrical detector of Ge at a set distance from the source.
 		- Calculate expected counts within the detector
-		- Would be a combination of fully energy deposition gammas and photoelectric effect
+		- Would only look at full energy deposition
