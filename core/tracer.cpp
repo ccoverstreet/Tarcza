@@ -112,6 +112,8 @@ float traceRayPath(Geometry geom, Ray ray, std::map<std::string, AttenCoeff> &co
 
 		bool is_inside = check_1 > 0 && check_2 >= 0 && check_3 >= 0;
 
+		//std::cout << i << ": " << is_inside << "\n";
+
 		if (!is_inside) {
 			continue;
 		}
@@ -119,7 +121,12 @@ float traceRayPath(Geometry geom, Ray ray, std::map<std::string, AttenCoeff> &co
 		collisions.push_back(Collision{t_intersection, n_dot_d, geom.getMaterial(i)});
 	}
 
+
 	std::sort(collisions.begin(), collisions.end(), sortCollision);
+
+	for (auto collision : collisions) {
+		//std::cout << collision.t_collision << " "  << collision.material << "\n";
+	}
 
 	return calculateRayContribution(collisions, coeffs);
 }
@@ -142,6 +149,8 @@ float calculateRayContribution(std::vector<Collision> &collisions, std::map<std:
 
 		float thickness = collision.t_collision - cur_position;
 		float new_flux = cur_flux * calculateTransmission(thickness, coeff);
+		//printf("New Flux: %f from t=%f and sig=%f\n", new_flux, thickness, coeff);
+		
 
 		if (collision.material == "Ge") {
 			cur_contribution += coeffs[collision.material].PE / coeffs[collision.material].Tot * (cur_flux - new_flux);

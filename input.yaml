@@ -6,7 +6,7 @@ partNameMap:
   "Part 2": "Pb"
 
 sources:
-  - unitRay: [0, 5, 0, 0, -1, 0]
-    coneAngle: 3.14
-    numberOfRays: 100
+  - unitRay: [0, 100, 0, 0, -1, 0.0001]
+    coneAngle: 0.1
+    numberOfRays: 1
     energy: 0.662

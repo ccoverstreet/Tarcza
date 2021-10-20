@@ -150,8 +150,8 @@ void writeTriangleToFile(Triangle tri, std::ofstream &os) {
 	os << "\n\n";
 }
 
-void writeRayToFile(Ray ray, std::ofstream &os) {
-	float k = 10; // Arbitrary scaling value
+void writeRayToFile(Ray ray, std::ofstream &os, float scaling) {
+	float k = scaling; // Arbitrary scaling value
 	Eigen::Vector3f endpoint = ray.pos + (k * ray.dir);
 	os << ray.pos.x() << " " << ray.pos.y() << " " << ray.pos.z() << "\n";
 	os << endpoint.x() << " " << endpoint.y() << " " << endpoint.z() << "\n";
@@ -192,9 +192,11 @@ void saveSetupGNUPlot(const char *filename, Geometry geom, std::vector<Source> &
 		}
 
 		std::cout << "N-rays: " << sources[i].n_rays << "\n";
+		auto test_ray = sources[i].generateRay(0).pos;
+		float scaling = abs(sqrt(test_ray.dot(test_ray)));
 
 		for (size_t j = 0; j < sources[i].n_rays; j += ray_inc) {
-			writeRayToFile(sources[i].generateRay(j), gnu);
+			writeRayToFile(sources[i].generateRay(j), gnu, scaling);
 		}
 	}
 

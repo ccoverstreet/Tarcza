@@ -1,0 +1,12 @@
+assemblyFile: "testfiles/Collimator.obj"
+
+# Maps the part or material name from OBJ file to a userdefined material
+partNameMap:
+  "Detector": "Ge"
+  "Collimator": "Pb"
+
+sources:
+  - unitRay: [0, -100, 0, 0, 1, 0]
+    coneAngle: 0.3
+    numberOfRays: 1000000
+    energy: 0.662
