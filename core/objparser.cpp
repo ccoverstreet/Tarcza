@@ -6,7 +6,7 @@
 #include <cmath>
 #include <map>
 
-Geometry parseObjFile(const char *filename, YAML::Node partname_map) {
+Geometry parseObjFile(const char *filename, YAML::Node partname_map, YAML::Node material_map) {
 	std::fstream input_file(filename);
 
 	std::vector<Eigen::Vector3f> vertices;
@@ -30,7 +30,7 @@ Geometry parseObjFile(const char *filename, YAML::Node partname_map) {
 
 			if (cur_part != "") {
 				std::string mat = partname_map[cur_part].as<std::string>();
-				part_map.insert(std::pair<std::string, Part>(cur_part, Part(cur_part, start_tri_index, cur_tri_index, mat)));
+				part_map.insert(std::pair<std::string, Part>(cur_part, Part(cur_part, start_tri_index, cur_tri_index, material_map[mat])));
 				start_tri_index = cur_tri_index;
 			}
 
@@ -70,7 +70,7 @@ Geometry parseObjFile(const char *filename, YAML::Node partname_map) {
 	}
 
 	std::string mat = partname_map[cur_part].as<std::string>();
-	part_map.insert(std::pair<std::string, Part>(cur_part, Part(cur_part, start_tri_index, cur_tri_index, mat)));
+	part_map.insert(std::pair<std::string, Part>(cur_part, Part(cur_part, start_tri_index, cur_tri_index, material_map[mat])));
 
 	printf("# of vertices: %d\n", vertices.size());
 	printf("# of triangles: %d\n", triangles.size());

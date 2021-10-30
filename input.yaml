@@ -1,12 +1,20 @@
-assemblyFile: "testfiles/Tarcza_Validation_Ge_Pb.obj"
+assemblyFile: "testfiles/Assembly_3.obj"
 
 # Maps the part or material name from OBJ file to a userdefined material
 partNameMap:
   "Part 1": "Ge"
   "Part 2": "Pb"
 
+materialMap:
+  "Ge":
+    name: "Ge"
+    density: 3.73
+    MCNP: 
+      - "01001 1.0"
+      - "02004 1.0"
+
 sources:
-  - unitRay: [0, 100, 0, 0, -1, 0.0001]
-    coneAngle: 0.1
-    numberOfRays: 1
-    energy: 0.662
+  #  - unitRay: [0, 100, 0, 0, -1, 0.0001]
+  #    coneAngle: 0.1
+  #    numberOfRays: 1
+  #    energy: 0.662

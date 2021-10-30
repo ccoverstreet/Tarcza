@@ -8,6 +8,7 @@
 #include "./core/objparser.h"
 #include "./core/tracer.h"
 #include "./core/config.h"
+#include "./core/mcnpconvert.h"
 
 int main(int argc, char **argv) {
 	if (argc < 2) {
@@ -23,6 +24,8 @@ int main(int argc, char **argv) {
 		std::cout << part.second.end << "\n";
 		std::cout << part.second.material << "\n";
 	}
+
+	writeSurfaces("mcnpsurfaces.txt", config.geometry);
 
 	printf("# of parts: %d\n", config.geometry.parts.size());
 	printf("# of triangles: %d\n", config.geometry.triangles.size());

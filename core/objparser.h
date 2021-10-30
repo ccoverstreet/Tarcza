@@ -14,4 +14,4 @@
 #include "./helpers.h"
 
 
-Geometry parseObjFile(const char *filename, YAML::Node partname_map);
+Geometry parseObjFile(const char *filename, YAML::Node partname_map, YAML::Node material_map);

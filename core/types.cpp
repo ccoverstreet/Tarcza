@@ -36,7 +36,7 @@ std::ostream &operator<<(std::ostream &output, const Source &s ) {
 
 // --------- END Printing overloads ---------
 
-Part::Part(std::string in_name, size_t in_start, size_t in_end, std::string mat) {
+Part::Part(std::string in_name, size_t in_start, size_t in_end, YAML::Node mat) {
 	name = in_name;
 	start = in_start;
 	end = in_end;
@@ -46,7 +46,7 @@ Part::Part(std::string in_name, size_t in_start, size_t in_end, std::string mat)
 std::string Geometry::getMaterial(size_t index) {
 	for (auto partpair : parts) {
 		if (index >= partpair.second.start && index < partpair.second.end) {
-			return partpair.second.material;
+			return partpair.second.material["name"].as<std::string>();
 		}
 	}
 

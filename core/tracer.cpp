@@ -44,7 +44,7 @@ AttenCoeff calculateAttenuationCoeffs(std::string material, float energy) {
 std::map<std::string, AttenCoeff> createCoeffMapForEnergy(float energy, std::map<std::string, Part> &parts) {
 	std::map<std::string, AttenCoeff> output_map;
 	for (auto pair : parts) {
-		output_map.insert(std::pair<std::string, AttenCoeff>(pair.second.material, calculateAttenuationCoeffs(pair.second.material, energy)));
+		output_map.insert(std::pair<std::string, AttenCoeff>(pair.first, calculateAttenuationCoeffs(pair.first, energy)));
 	}
 
 	return output_map;

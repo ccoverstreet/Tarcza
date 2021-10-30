@@ -11,7 +11,7 @@
 
 
 struct TarczaConfig {
-	Geometry geometry;		
+	Geometry geometry;
 	std::vector<Source> sources;
 };
 
@@ -25,7 +25,7 @@ TarczaConfig createTarczaConfig(const char *filename) {
 	YAML::Node partname_map = config["partNameMap"];
 	YAML::Node material_map = config["materialMap"];
 
-	model_data.geometry = parseObjFile(assembly_file.c_str(), partname_map);
+	model_data.geometry = parseObjFile(assembly_file.c_str(), partname_map, material_map);
 
 	// Parse source definitions
 	std::vector<Source> sources;

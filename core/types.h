@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <map>
 #include <vector>
+#include <yaml-cpp/yaml.h>
 
 struct Triangle {
 	Eigen::Vector3f v1;
@@ -14,13 +15,18 @@ struct Triangle {
 	friend std::ostream &operator<<(std::ostream &output, const Triangle &t); 
 };
 
+struct Material {
+	float density;
+	std::vector<std::string> MCNP;
+};
+
 struct Part {
 	std::string name;
 	size_t start;
 	size_t end;
-	std::string material;
+	YAML::Node material;
 
-	Part(std::string in_name, size_t in_start, size_t in_end, std::string mat);
+	Part(std::string in_name, size_t in_start, size_t in_end, YAML::Node mat);
 
 	friend std::ostream &operator<<(std::ostream &output, const Part &p);
 };
