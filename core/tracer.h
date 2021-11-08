@@ -24,7 +24,8 @@ struct AttenCoeff {
 	float PE; // Photoelectric coefficient
 };
 
-AttenCoeff calculateAttenuationCoeffs(std::string material, float energy);
+AttenCoeff calculateAttenuationCoeffs(Part part, float energy);
+
 std::map<std::string, AttenCoeff> createCoeffMapForEnergy(float energy, std::map<std::string, Part> &parts);
 
 void tarczaTracingRoutine(Geometry geom, std::vector<Source> rays);

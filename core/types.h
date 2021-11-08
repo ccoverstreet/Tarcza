@@ -17,7 +17,6 @@ struct Triangle {
 
 struct Material {
 	float density;
-	std::vector<std::string> MCNP;
 };
 
 struct Part {

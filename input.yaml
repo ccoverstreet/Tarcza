@@ -1,20 +1,20 @@
-assemblyFile: "testfiles/Assembly_3.obj"
+assemblyFile: "testfiles/Collimator.obj"
 
 # Maps the part or material name from OBJ file to a userdefined material
 partNameMap:
-  "Part 1": "Ge"
-  "Part 2": "Pb"
+  "Detector": "Ge"
+  "Collimator": "Pb"
 
 materialMap:
   "Ge":
     name: "Ge"
-    density: 3.73
-    MCNP: 
-      - "01001 1.0"
-      - "02004 1.0"
+    density: 5.323
+  "Pb":
+    name: "Pb"
+    density: 11.34
 
 sources:
-  #  - unitRay: [0, 100, 0, 0, -1, 0.0001]
-  #    coneAngle: 0.1
-  #    numberOfRays: 1
-  #    energy: 0.662
+    - unitRay: [0, -100, 0, 0, 1, 0]
+      coneAngle: 0.03
+      numberOfRays: 1000000
+      energy: 0.662

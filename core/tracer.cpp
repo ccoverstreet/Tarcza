@@ -14,8 +14,9 @@ float linearInterpolate(float x, float x1, float y1, float x2, float y2) {
 	return (y2 - y1) / (x2 - x1) * (x - x1) + y1;
 }
 
-AttenCoeff calculateAttenuationCoeffs(std::string material, float energy) {
-	auto coeffData = COEFF_DATABASE[material];
+AttenCoeff calculateAttenuationCoeffs(Part part, float energy) {
+	auto coeffData = COEFF_DATABASE[part.material["name"].as<std::string>()];
+	auto density  = part.material["density"].as<float>();
 
 	size_t lower_index = 0;
 	for (size_t i = 0; i < coeffData.size() - 1; i++) {
@@ -28,6 +29,7 @@ AttenCoeff calculateAttenuationCoeffs(std::string material, float energy) {
 	auto total_atten = linearInterpolate(energy, coeffData[lower_index].E, coeffData[lower_index].Sig_t, coeffData[lower_index + 1].E, coeffData[lower_index + 1].Sig_t);
 	auto pe_atten = linearInterpolate(energy, coeffData[lower_index].E, coeffData[lower_index].Sig_pe, coeffData[lower_index + 1].E, coeffData[lower_index + 1].Sig_pe);
 
+	/*
 	if (material == "Ge") {
 		total_atten = total_atten * 5.323;
 		pe_atten = pe_atten * 5.323;
@@ -35,16 +37,18 @@ AttenCoeff calculateAttenuationCoeffs(std::string material, float energy) {
 		total_atten = total_atten * 11.34;
 		pe_atten = pe_atten * 11.34;
 	}
+	*/
 
-	std::cout << total_atten << " " << pe_atten << "\n";
-
-	return AttenCoeff{total_atten, pe_atten};
+	return AttenCoeff{total_atten * density, pe_atten * density};
 }
 
 std::map<std::string, AttenCoeff> createCoeffMapForEnergy(float energy, std::map<std::string, Part> &parts) {
 	std::map<std::string, AttenCoeff> output_map;
 	for (auto pair : parts) {
-		output_map.insert(std::pair<std::string, AttenCoeff>(pair.first, calculateAttenuationCoeffs(pair.first, energy)));
+		auto fart = calculateAttenuationCoeffs(pair.second, energy);
+		printf("PARTNAME: %s, ATTEN: %f %f\n", pair.first.c_str(), fart.Tot, fart.PE);
+		std::cout << pair.first << "\n";
+		output_map.insert(std::pair<std::string, AttenCoeff>(pair.second.material["name"].as<std::string>(), calculateAttenuationCoeffs(pair.second, energy)));
 	}
 
 	return output_map;
@@ -124,9 +128,11 @@ float traceRayPath(Geometry geom, Ray ray, std::map<std::string, AttenCoeff> &co
 
 	std::sort(collisions.begin(), collisions.end(), sortCollision);
 
+	/*
 	for (auto collision : collisions) {
-		//std::cout << collision.t_collision << " "  << collision.material << "\n";
+		std::cout << collision.t_collision << " "  << collision.material << "\n";
 	}
+	*/
 
 	return calculateRayContribution(collisions, coeffs);
 }
