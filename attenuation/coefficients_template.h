@@ -6,8 +6,8 @@
 
 struct CrossSectionData {
 	float E; // Energy in MeV
-	float Sig_t; // Total attenuation cross section
 	float Sig_pe; // photoelectric macroscopic cross section
+	float Sig_t; // Total attenuation cross section
 };
 
 std::map<std::string, std::vector<CrossSectionData>> COEFF_DATABASE = {

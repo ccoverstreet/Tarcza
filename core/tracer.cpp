@@ -14,6 +14,19 @@ float linearInterpolate(float x, float x1, float y1, float x2, float y2) {
 	return (y2 - y1) / (x2 - x1) * (x - x1) + y1;
 }
 
+float logLogLinearInterpolate(float x, float x1, float y1, float x2, float y2) {
+	double lx = log10(x);
+	double lx1 = log10(x1);
+	double ly1 = log10(y1);
+	double lx2 = log10(x2);
+	double ly2 = log10(y2);
+
+	printf("%f %f %f %f %f\n", lx, lx1, ly1, lx2, ly2);
+	printf("%f\n", (ly2 - ly1) / (lx2 - lx1) * (lx - lx1) + ly1);
+
+	return pow(10, (ly2 - ly1) / (lx2 - lx1) * (lx - lx1) + ly1);
+}
+
 AttenCoeff calculateAttenuationCoeffs(Part part, float energy) {
 	auto coeffData = COEFF_DATABASE[part.material["name"].as<std::string>()];
 	auto density  = part.material["density"].as<float>();
@@ -26,8 +39,8 @@ AttenCoeff calculateAttenuationCoeffs(Part part, float energy) {
 		}
 	}
 
-	auto total_atten = linearInterpolate(energy, coeffData[lower_index].E, coeffData[lower_index].Sig_t, coeffData[lower_index + 1].E, coeffData[lower_index + 1].Sig_t);
-	auto pe_atten = linearInterpolate(energy, coeffData[lower_index].E, coeffData[lower_index].Sig_pe, coeffData[lower_index + 1].E, coeffData[lower_index + 1].Sig_pe);
+	auto total_atten = logLogLinearInterpolate(energy, coeffData[lower_index].E, coeffData[lower_index].Sig_t, coeffData[lower_index + 1].E, coeffData[lower_index + 1].Sig_t);
+	auto pe_atten = logLogLinearInterpolate(energy, coeffData[lower_index].E, coeffData[lower_index].Sig_pe, coeffData[lower_index + 1].E, coeffData[lower_index + 1].Sig_pe);
 
 	/*
 	if (material == "Ge") {
@@ -39,14 +52,15 @@ AttenCoeff calculateAttenuationCoeffs(Part part, float energy) {
 	}
 	*/
 
+	printf("FUCKING ATTEN: %f, %f\n", total_atten, pe_atten);
+
 	return AttenCoeff{total_atten * density, pe_atten * density};
 }
 
 std::map<std::string, AttenCoeff> createCoeffMapForEnergy(float energy, std::map<std::string, Part> &parts) {
 	std::map<std::string, AttenCoeff> output_map;
 	for (auto pair : parts) {
-		auto fart = calculateAttenuationCoeffs(pair.second, energy);
-		printf("PARTNAME: %s, ATTEN: %f %f\n", pair.first.c_str(), fart.Tot, fart.PE);
+		printf("PARTNAME: %s\n", pair.first.c_str());
 		std::cout << pair.first << "\n";
 		output_map.insert(std::pair<std::string, AttenCoeff>(pair.second.material["name"].as<std::string>(), calculateAttenuationCoeffs(pair.second, energy)));
 	}
@@ -91,7 +105,7 @@ bool sortCollision(const Collision &a, const Collision &b) {
 }
 
 // returns contribution of ray flux
-float traceRayPath(Geometry geom, Ray ray, std::map<std::string, AttenCoeff> &coeffs) {					
+float traceRayPath(Geometry geom, Ray ray, std::map<std::string, AttenCoeff> &coeffs) {
 	std::vector<Collision> collisions;
 
 	for (size_t i = 0; i < geom.triangles.size(); i++) {
@@ -101,7 +115,7 @@ float traceRayPath(Geometry geom, Ray ray, std::map<std::string, AttenCoeff> &co
 		// Check if intersection ever occurs
 		if (n_dot_d == 0) {
 			continue;
-		} 
+		}
 
 		auto n_plane_dot_pos = tri.norm.dot(tri.v1 - ray.pos);
 
@@ -128,12 +142,6 @@ float traceRayPath(Geometry geom, Ray ray, std::map<std::string, AttenCoeff> &co
 
 	std::sort(collisions.begin(), collisions.end(), sortCollision);
 
-	/*
-	for (auto collision : collisions) {
-		std::cout << collision.t_collision << " "  << collision.material << "\n";
-	}
-	*/
-
 	return calculateRayContribution(collisions, coeffs);
 }
 
@@ -148,24 +156,26 @@ float calculateRayContribution(std::vector<Collision> &collisions, std::map<std:
 	float cur_contribution = 0.0;
 
 	for (auto collision : collisions) {
-		float coeff = coeff_air; // 
+		float coeff = coeff_air; //
 		if (collision.material == cur_material) {
 			coeff = coeffs[collision.material].Tot;
-		}	
+		}
 
 		float thickness = collision.t_collision - cur_position;
 		float new_flux = cur_flux * calculateTransmission(thickness, coeff);
 		//printf("New Flux: %f from t=%f and sig=%f\n", new_flux, thickness, coeff);
-		
 
+		//printf("%s, %d\n", collision.material.c_str(), collision.material == "Ge");
 		if (collision.material == "Ge") {
 			cur_contribution += coeffs[collision.material].PE / coeffs[collision.material].Tot * (cur_flux - new_flux);
+			//printf("%f, %f, %f\n", cur_flux - new_flux, coeffs[collision.material].PE, coeffs[collision.material].Tot);
 		}
 
 		// Updating values for loop iteration
 		cur_material = collision.material;
 		cur_position = collision.t_collision;
 		cur_flux = new_flux;
+		//printf("%s: %f\n", cur_material.c_str(), new_flux);
 	}
 
 	return cur_contribution;

@@ -4,6 +4,7 @@ assemblyFile: "testfiles/Collimator.obj"
 partNameMap:
   "Detector": "Ge"
   "Collimator": "Pb"
+  "Part 4": "Al"
 
 materialMap:
   "Ge":
@@ -12,9 +13,12 @@ materialMap:
   "Pb":
     name: "Pb"
     density: 11.34
+  "Al":
+    name: "Al"
+    density: 2.73
 
 sources:
     - unitRay: [0, -100, 0, 0, 1, 0]
-      coneAngle: 0.03
-      numberOfRays: 1000000
+      coneAngle: 0.4
+      numberOfRays: 100000
       energy: 0.662
