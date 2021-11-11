@@ -76,11 +76,11 @@ Ray::Ray() {
 
 // Returns emission area (unit sphere)
 float coneAngleToArea(float cone_angle) {
+	printf("CAP AREA: %f\n", 2*float(M_PI)*(1 - cos(cone_angle/2)));
 	return 2*float(M_PI)*(1 - cos(cone_angle/2));
 }
 
 Source::Source(Ray in_unit_ray, float in_cone_angle, size_t in_n_rays, float in_energy) {
-	//unit_ray = in_unit_ray;	
 	cone_angle = in_cone_angle;	
 	n_rays = in_n_rays;	
 	energy = in_energy;	
@@ -114,31 +114,28 @@ Source::Source(Ray in_unit_ray, float in_cone_angle, size_t in_n_rays, float in_
 	rot_matrix = R;
 }
 
-Ray Source::generateRay(size_t ray_n) {
-	float phi = M_PI * (1 + sqrt(5.0)) / 2;
+Ray Source::generateRay(std::mt19937 &gen) {
+	float d = sqrt(m_dist(gen));
+	
+	float phi = cone_angle / 2;
+	float bot = cos(phi);
 
-	float x_max = 1.0;
-	float x_min = cos(cone_angle / 2);
+	float probe = sqrt(m_dist(gen)) * (1-bot) + bot;
+	float theta = m_dist(gen) * 2 * M_PI;
 
-	auto dir = unit_ray.dir;
-	auto pos = unit_ray.pos;
+	float s_phi = acos(probe);
 
-	// Determine x value for sphere
-	float x = 1;
-	if (n_rays != 1) {
-		x = x_max - (float(ray_n)/float(n_rays - 1)) * (x_max - x_min);
+	if (n_rays == 1) {
+		return unit_ray;
 	}
-	float radius = sqrt(1 - x * x);
 
-	float theta = phi * float(ray_n);
-
-	float y = cos(theta) * radius;
-	float z = sin(theta) * radius;
-
+	float x = cos(s_phi);
+	float y = sin(s_phi) * cos(theta);
+	float z = sin(s_phi) * sin(theta);
 
 	Eigen::Vector3f v(x, y, z);
 	Eigen::Vector3f res = rot_matrix * v;
-	return Ray(pos, res);
+	return Ray(unit_ray.pos, res);
 }
 
 void writeTriangleToFile(Triangle tri, std::ofstream &os) {
@@ -181,6 +178,7 @@ void saveSetupGNUPlot(const char *filename, Geometry geom, std::vector<Source> &
 
 	gnu << "E\n";
 
+	std::mt19937 rng(0);
 
 	for (size_t i = 0; i < sources.size(); i++) {
 		size_t ray_inc = 1;
@@ -192,11 +190,11 @@ void saveSetupGNUPlot(const char *filename, Geometry geom, std::vector<Source> &
 		}
 
 		std::cout << "N-rays: " << sources[i].n_rays << "\n";
-		auto test_ray = sources[i].generateRay(0).pos;
+		auto test_ray = sources[i].generateRay(rng).pos;
 		float scaling = abs(sqrt(test_ray.dot(test_ray)));
 
 		for (size_t j = 0; j < sources[i].n_rays; j += ray_inc) {
-			writeRayToFile(sources[i].generateRay(j), gnu, scaling);
+			writeRayToFile(sources[i].generateRay(rng), gnu, scaling);
 		}
 	}
 

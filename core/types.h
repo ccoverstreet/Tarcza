@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <map>
 #include <vector>
+#include <random>
 #include <yaml-cpp/yaml.h>
 
 struct Triangle {
@@ -56,10 +57,11 @@ struct Source {
 	float energy;
 	float area; // Emission area
 	Eigen::Matrix<float, 3, 3> rot_matrix;
+	std::uniform_real_distribution<float> m_dist = std::uniform_real_distribution<float>(0.0, 1.0);
 
 	Source(Ray unit_ray, float cone_angle, size_t n_rays, float energy);
 
-	Ray generateRay(size_t ray_n);
+	Ray generateRay(std::mt19937 &gen);
 
 	friend std::ostream &operator<<(std::ostream &output, const Source &s);
 };

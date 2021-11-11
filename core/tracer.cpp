@@ -3,6 +3,8 @@
 #include <omp.h>
 #include <map>
 #include <algorithm>
+#include <stdlib.h>
+#include <chrono>
 #include "../attenuation/coefficients.h"
 
 
@@ -42,17 +44,7 @@ AttenCoeff calculateAttenuationCoeffs(Part part, float energy) {
 	auto total_atten = logLogLinearInterpolate(energy, coeffData[lower_index].E, coeffData[lower_index].Sig_t, coeffData[lower_index + 1].E, coeffData[lower_index + 1].Sig_t);
 	auto pe_atten = logLogLinearInterpolate(energy, coeffData[lower_index].E, coeffData[lower_index].Sig_pe, coeffData[lower_index + 1].E, coeffData[lower_index + 1].Sig_pe);
 
-	/*
-	if (material == "Ge") {
-		total_atten = total_atten * 5.323;
-		pe_atten = pe_atten * 5.323;
-	} else if (material == "Pb") {
-		total_atten = total_atten * 11.34;
-		pe_atten = pe_atten * 11.34;
-	}
-	*/
-
-	printf("FUCKING ATTEN: %f, %f\n", total_atten, pe_atten);
+	//printf("FUCKING ATTEN: %f, %f\n", total_atten, pe_atten);
 
 	return AttenCoeff{total_atten * density, pe_atten * density};
 }
@@ -73,6 +65,17 @@ void tarczaTracingRoutine(Geometry geom, std::vector<Source> sources) {
 	auto start = omp_get_wtime();
 	printf("Start at: %d\n", start);
 
+
+
+	// Setup RNG
+	auto now = std::chrono::high_resolution_clock::now();
+	auto s_seed = std::chrono::duration_cast<std::chrono::nanoseconds>(now.time_since_epoch()).count();
+	srand(s_seed);
+	std::vector<std::mt19937> rngs;
+	for (size_t i = 0; i < omp_get_max_threads(); i++) {
+		rngs.push_back(std::mt19937(rand()));
+	}
+
 	for (size_t src_n = 0; src_n < sources.size(); src_n++ ) {
 		auto src = sources[src_n];
 		auto coeff_map = createCoeffMapForEnergy(sources[src_n].energy, geom.parts);
@@ -82,7 +85,7 @@ void tarczaTracingRoutine(Geometry geom, std::vector<Source> sources) {
 		std::cout << "Area per ray: " << area_per_ray << "\n";
 		#pragma omp parallel for reduction(+: contribution_sum)
 		for (size_t ray_n = 0; ray_n < src.n_rays; ray_n++) {
-			contribution_sum += area_per_ray * traceRayPath(geom, src.generateRay(ray_n), coeff_map);
+			contribution_sum += area_per_ray * traceRayPath(geom, src.generateRay(rngs[omp_get_thread_num()]), coeff_map);
 		}
 
 		std::cout << "Contribution sum: " << contribution_sum << "\n";
@@ -167,6 +170,7 @@ float calculateRayContribution(std::vector<Collision> &collisions, std::map<std:
 
 		//printf("%s, %d\n", collision.material.c_str(), collision.material == "Ge");
 		if (collision.material == "Ge") {
+			printf("d = %f\n", thickness);
 			cur_contribution += coeffs[collision.material].PE / coeffs[collision.material].Tot * (cur_flux - new_flux);
 			//printf("%f, %f, %f\n", cur_flux - new_flux, coeffs[collision.material].PE, coeffs[collision.material].Tot);
 		}
