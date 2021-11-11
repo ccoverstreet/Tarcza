@@ -20,7 +20,7 @@ std::ostream &operator<<(std::ostream &output, const Part &p) {
 }
 
 std::ostream &operator<<(std::ostream &output, const Ray &r ) {
-	std::cout << "\nRay\n";
+	output << "\nRay\n";
 	output << r.pos << "\n" << r.dir << "\n";
 	return output;
 }
@@ -76,7 +76,6 @@ Ray::Ray() {
 
 // Returns emission area (unit sphere)
 float coneAngleToArea(float cone_angle) {
-	printf("CAP AREA: %f\n", 2*float(M_PI)*(1 - cos(cone_angle/2)));
 	return 2*float(M_PI)*(1 - cos(cone_angle/2));
 }
 
@@ -108,8 +107,6 @@ Source::Source(Ray in_unit_ray, float in_cone_angle, size_t in_n_rays, float in_
 		{in_unit_ray.dir.y(), j.y(), k.y()},
 		{in_unit_ray.dir.z(), j.z(), k.z()}
 	};
-
-	std::cout << "Rot Matrix: " << R << "\n";
 
 	rot_matrix = R;
 }
@@ -184,12 +181,10 @@ void saveSetupGNUPlot(const char *filename, Geometry geom, std::vector<Source> &
 		size_t ray_inc = 1;
 		if (sources[i].n_rays > 1E3) {
 			auto k = sources[i].n_rays;
-			std::cout << "Limiter " << k / 1E3 << "\n";
 
 			ray_inc	= k / 1E3;
 		}
 
-		std::cout << "N-rays: " << sources[i].n_rays << "\n";
 		auto test_ray = sources[i].generateRay(rng).pos;
 		float scaling = abs(sqrt(test_ray.dot(test_ray)));
 

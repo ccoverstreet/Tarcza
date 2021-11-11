@@ -23,9 +23,6 @@ float logLogLinearInterpolate(float x, float x1, float y1, float x2, float y2) {
 	double lx2 = log10(x2);
 	double ly2 = log10(y2);
 
-	printf("%f %f %f %f %f\n", lx, lx1, ly1, lx2, ly2);
-	printf("%f\n", (ly2 - ly1) / (lx2 - lx1) * (lx - lx1) + ly1);
-
 	return pow(10, (ly2 - ly1) / (lx2 - lx1) * (lx - lx1) + ly1);
 }
 
@@ -44,16 +41,12 @@ AttenCoeff calculateAttenuationCoeffs(Part part, float energy) {
 	auto total_atten = logLogLinearInterpolate(energy, coeffData[lower_index].E, coeffData[lower_index].Sig_t, coeffData[lower_index + 1].E, coeffData[lower_index + 1].Sig_t);
 	auto pe_atten = logLogLinearInterpolate(energy, coeffData[lower_index].E, coeffData[lower_index].Sig_pe, coeffData[lower_index + 1].E, coeffData[lower_index + 1].Sig_pe);
 
-	//printf("FUCKING ATTEN: %f, %f\n", total_atten, pe_atten);
-
 	return AttenCoeff{total_atten * density, pe_atten * density};
 }
 
 std::map<std::string, AttenCoeff> createCoeffMapForEnergy(float energy, std::map<std::string, Part> &parts) {
 	std::map<std::string, AttenCoeff> output_map;
 	for (auto pair : parts) {
-		printf("PARTNAME: %s\n", pair.first.c_str());
-		std::cout << pair.first << "\n";
 		output_map.insert(std::pair<std::string, AttenCoeff>(pair.second.material["name"].as<std::string>(), calculateAttenuationCoeffs(pair.second, energy)));
 	}
 
@@ -76,7 +69,9 @@ void tarczaTracingRoutine(Geometry geom, std::vector<Source> sources) {
 		rngs.push_back(std::mt19937(rand()));
 	}
 
+	size_t ray_count = 0;
 	for (size_t src_n = 0; src_n < sources.size(); src_n++ ) {
+		ray_count += sources[src_n].n_rays;
 		auto src = sources[src_n];
 		auto coeff_map = createCoeffMapForEnergy(sources[src_n].energy, geom.parts);
 
@@ -94,7 +89,8 @@ void tarczaTracingRoutine(Geometry geom, std::vector<Source> sources) {
 	auto end = omp_get_wtime();
 	printf("End at: %d\n", end);
 
-	printf("Time taken to trace rays: %f \n", (end - start));
+	printf("Time taken to trace rays: %f s\n", (end - start));
+	printf("Time per ray: %f s\n", (end - start) / float(ray_count));
 }
 
 
@@ -133,7 +129,6 @@ float traceRayPath(Geometry geom, Ray ray, std::map<std::string, AttenCoeff> &co
 
 		bool is_inside = check_1 > 0 && check_2 >= 0 && check_3 >= 0;
 
-		//std::cout << i << ": " << is_inside << "\n";
 
 		if (!is_inside) {
 			continue;
@@ -166,19 +161,15 @@ float calculateRayContribution(std::vector<Collision> &collisions, std::map<std:
 
 		float thickness = collision.t_collision - cur_position;
 		float new_flux = cur_flux * calculateTransmission(thickness, coeff);
-		//printf("New Flux: %f from t=%f and sig=%f\n", new_flux, thickness, coeff);
 
-		//printf("%s, %d\n", collision.material.c_str(), collision.material == "Ge");
 		if (collision.material == "Ge") {
 			cur_contribution += coeffs[collision.material].PE / coeffs[collision.material].Tot * (cur_flux - new_flux);
-			//printf("%f, %f, %f\n", cur_flux - new_flux, coeffs[collision.material].PE, coeffs[collision.material].Tot);
 		}
 
 		// Updating values for loop iteration
 		cur_material = collision.material;
 		cur_position = collision.t_collision;
 		cur_flux = new_flux;
-		//printf("%s: %f\n", cur_material.c_str(), new_flux);
 	}
 
 	return cur_contribution;

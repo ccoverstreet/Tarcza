@@ -41,7 +41,6 @@ TarczaConfig createTarczaConfig(const char *filename) {
 		std::cout << "Cone angle: " << cone_angle << "\n";
 		std::cout << "Number of rays: " << n_rays << "\n";
 
-		std::cout << unit_ray_elems.size() << "\n";
 		auto unit_ray = Ray(unit_ray_elems[0],
 				unit_ray_elems[1],
 				unit_ray_elems[2],
@@ -49,7 +48,6 @@ TarczaConfig createTarczaConfig(const char *filename) {
 				unit_ray_elems[4],
 				unit_ray_elems[5]);
 
-		std::cout << unit_ray;
 
 		sources.push_back(Source(unit_ray, cone_angle, n_rays, energy));
 	}

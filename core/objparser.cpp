@@ -14,7 +14,7 @@ Geometry parseObjFile(const char *filename, YAML::Node partname_map, YAML::Node 
 	std::map<std::string, Part> part_map;
 
 	std::string cur_part = "";
-		
+
 	size_t cur_tri_index = 0;
 	size_t start_tri_index = 0;
 
@@ -36,7 +36,7 @@ Geometry parseObjFile(const char *filename, YAML::Node partname_map, YAML::Node 
 
 			std::string part;
 			std::getline(input_file, part);
-			std::cout << "Reading part \"" << part << "\"...\n";
+			std::cout << "\nReading part \"" << part << "\"...\n";
 			cur_part = part;
 		} else if (desc == "v") {
 			float x, y, z;

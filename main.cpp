@@ -18,11 +18,13 @@ int main(int argc, char **argv) {
 
 	TarczaConfig config = createTarczaConfig(argv[1]);
 
+	printf("\nGeometry:\n");
 	for (auto part : config.geometry.parts) {
 		std::cout << part.second.name << "\n";
 		std::cout << part.second.start << "\n";
 		std::cout << part.second.end << "\n";
 		std::cout << part.second.material << "\n";
+		printf("\n");
 	}
 
 	writeSurfaces("mcnpsurfaces.txt", config.geometry);
