@@ -170,7 +170,6 @@ float calculateRayContribution(std::vector<Collision> &collisions, std::map<std:
 
 		//printf("%s, %d\n", collision.material.c_str(), collision.material == "Ge");
 		if (collision.material == "Ge") {
-			printf("d = %f\n", thickness);
 			cur_contribution += coeffs[collision.material].PE / coeffs[collision.material].Tot * (cur_flux - new_flux);
 			//printf("%f, %f, %f\n", cur_flux - new_flux, coeffs[collision.material].PE, coeffs[collision.material].Tot);
 		}
