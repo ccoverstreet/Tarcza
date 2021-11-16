@@ -120,6 +120,10 @@ float traceRayPath(Geometry geom, Ray ray, std::map<std::string, AttenCoeff> &co
 
 		float t_intersection = n_plane_dot_pos / n_dot_d;
 
+		if (t_intersection < 0) {
+			continue;
+		}
+
 		// Position of intersection in 3D space
 		auto pos_int = ray.pos + t_intersection * ray.dir;
 
