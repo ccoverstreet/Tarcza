@@ -76,14 +76,14 @@ void tarczaTracingRoutine(Geometry geom, std::vector<Source> sources) {
 		auto coeff_map = createCoeffMapForEnergy(sources[src_n].energy, geom.parts);
 
 		float contribution_sum = 0;
-		float area_per_ray = sources[src_n].area / float(sources[src_n].n_rays) / (4 * M_PI);
+		float area_per_ray = sources[src_n].area / float(sources[src_n].n_rays) / (4 * M_PI) / 2;
 		std::cout << "Area per ray: " << area_per_ray << "\n";
 		#pragma omp parallel for reduction(+: contribution_sum)
 		for (size_t ray_n = 0; ray_n < src.n_rays; ray_n++) {
 			contribution_sum += area_per_ray * traceRayPath(geom, src.generateRay(rngs[omp_get_thread_num()]), coeff_map);
 		}
 
-		contribution_sum = contribution_sum / 2;
+		contribution_sum = contribution_sum;
 
 		std::cout << "Contribution sum: " << contribution_sum << "\n";
 	}
