@@ -167,7 +167,7 @@ void saveSetupGNUPlot(const char *filename, Geometry geom, std::vector<Source> &
 
 	// Script header
 	gnu << "set view equal xyz\n";
-	gnu << "splot \"-\" with lines, \"-\" lc rgb \"red\" lt 0.1 with lines\n";
+	gnu << "splot \"-\" with lines, \"-\" lc rgb \"red\" lt 0.01 with lines\n";
 
 	for (auto tri : geom.triangles) {
 		writeTriangleToFile(tri, gnu);

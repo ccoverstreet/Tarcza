@@ -83,6 +83,8 @@ void tarczaTracingRoutine(Geometry geom, std::vector<Source> sources) {
 			contribution_sum += area_per_ray * traceRayPath(geom, src.generateRay(rngs[omp_get_thread_num()]), coeff_map);
 		}
 
+		contribution_sum = contribution_sum / 2;
+
 		std::cout << "Contribution sum: " << contribution_sum << "\n";
 	}
 

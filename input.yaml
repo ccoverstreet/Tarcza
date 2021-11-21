@@ -18,7 +18,7 @@ materialMap:
     density: 2.73
 
 sources:
-    - unitRay: [0, -100, 0, 0, 1, 0]
-      coneAngle: 0.4
+    - unitRay: [0, -50, 0, 0, 1, 0]
+      coneAngle: 0.6
       numberOfRays: 1000000
       energy: 0.186
