@@ -14,9 +14,11 @@ Geometry parseObjFile(const char *filename, YAML::Node partname_map, YAML::Node 
 	std::map<std::string, Part> part_map;
 
 	std::string cur_part = "";
+	std::string cur_mat = "";
 
 	size_t cur_tri_index = 0;
 	size_t start_tri_index = 0;
+	size_t skipped_triangles = 0;
 
 	while (!input_file.fail()) {
 		std::string desc;
@@ -28,17 +30,31 @@ Geometry parseObjFile(const char *filename, YAML::Node partname_map, YAML::Node 
 				input_file.ignore(1);
 			}
 
-			if (cur_part != "") {
-				std::string mat = partname_map[cur_part].as<std::string>();
-				part_map.insert(std::pair<std::string, Part>(cur_part, Part(cur_part, start_tri_index, cur_tri_index, material_map[mat])));
-				start_tri_index = cur_tri_index;
+			if (cur_mat != "VOID" && cur_part != "") {
+				std::cout << "FUCK" << cur_part << cur_mat << std::endl;
+				part_map.insert(std::pair<std::string, Part>(cur_part, Part(cur_part, start_tri_index, cur_tri_index, material_map[cur_mat.c_str()])));
 			}
 
+			start_tri_index = cur_tri_index;
 			std::string part;
 			std::getline(input_file, part);
 			std::cout << "\nReading part \"" << part << "\"...\n";
 			cur_part = part;
-		} else if (desc == "v") {
+			cur_mat = partname_map[cur_part].as<std::string>();
+
+			continue;
+		} 
+
+		if (cur_mat == "VOID") {
+			input_file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+			if (desc == "v") {
+				skipped_triangles++;
+			}
+
+			continue;
+		}
+
+		if (desc == "v") {
 			float x, y, z;
 			input_file >> x;
 			input_file >> y;
@@ -52,9 +68,9 @@ Geometry parseObjFile(const char *filename, YAML::Node partname_map, YAML::Node 
 
 			input_file >> v1 >> v2 >> v3;
 
-			uint32_t i_v1 = std::stoi(v1.substr(0, v1.find("/"))) - 1;
-			uint32_t i_v2 = std::stoi(v2.substr(0, v2.find("/"))) - 1;
-			uint32_t i_v3 = std::stoi(v3.substr(0, v3.find("/"))) - 1;
+			uint32_t i_v1 = std::stoi(v1.substr(0, v1.find("/"))) - 1 - skipped_triangles;
+			uint32_t i_v2 = std::stoi(v2.substr(0, v2.find("/"))) - 1 - skipped_triangles;
+			uint32_t i_v3 = std::stoi(v3.substr(0, v3.find("/"))) - 1 - skipped_triangles;
 
 			auto vect1 = vertices[i_v1];
 			auto vect2 = vertices[i_v2];
@@ -69,8 +85,11 @@ Geometry parseObjFile(const char *filename, YAML::Node partname_map, YAML::Node 
 		}
 	}
 
-	std::string mat = partname_map[cur_part].as<std::string>();
-	part_map.insert(std::pair<std::string, Part>(cur_part, Part(cur_part, start_tri_index, cur_tri_index, material_map[mat])));
+
+	if (cur_part != "" && cur_mat != "VOID") {
+		part_map.insert(std::pair<std::string, Part>(cur_part, Part(cur_part, start_tri_index, cur_tri_index, material_map[cur_mat.c_str()])));
+		start_tri_index = cur_tri_index;
+	}
 
 	printf("# of vertices: %d\n", vertices.size());
 	printf("# of triangles: %d\n", triangles.size());
