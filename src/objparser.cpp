@@ -31,7 +31,6 @@ Geometry parseObjFile(const char *filename, YAML::Node partname_map, YAML::Node 
 			}
 
 			if (cur_mat != "VOID" && cur_part != "") {
-				std::cout << "FUCK" << cur_part << cur_mat << std::endl;
 				part_map.insert(std::pair<std::string, Part>(cur_part, Part(cur_part, start_tri_index, cur_tri_index, material_map[cur_mat.c_str()])));
 			}
 
