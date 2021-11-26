@@ -6,6 +6,26 @@ Currently, the parser only supports OnShape-style OBJ file outputs. It seems lik
 
 This program could also be extended to generate MCNP style input files based upon user specifications
 
+## Usage
+
+### Building
+
+1. Clone this repository: `git clone https://github.com/ccoverstreet/Tarcza --recursive`
+2. Change into cloned directory: `cd Tarcza`
+3. Create and change into build directory: `mkdir build && cd build`
+4. Create release build: `cmake -DCMAKE_BUILD_TYPE=Release .. && cmake --build .`
+5. Running example: `cd .. && ./build/Tarcza input.yaml`
+
+**Summarized**
+```bash
+git clone https://github.com/ccoverstreet/Tarcza --recursive
+cd Tarcza
+mkdir build && cd build
+cmake -DCMAKE_BUILD_TYPE=Release .. && cmake --build .
+cd .. && ./build/Tarcza input.yaml
+
+```
+
 ## Tasks
 
 3. Validate results with comparisons to prior work and simple analytically solvable examples
