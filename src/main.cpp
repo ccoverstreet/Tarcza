@@ -5,10 +5,10 @@
 #include <omp.h>
 #include <yaml-cpp/yaml.h>
 
-#include "./core/objparser.h"
-#include "./core/tracer.h"
-#include "./core/config.h"
-#include "./core/mcnpconvert.h"
+#include "./objparser.h"
+#include "./tracer.h"
+#include "./config.h"
+#include "./mcnpconvert.h"
 
 int main(int argc, char **argv) {
 	if (argc < 2) {
@@ -27,7 +27,7 @@ int main(int argc, char **argv) {
 		printf("\n");
 	}
 
-	writeSurfaces("mcnpsurfaces.txt", config.geometry);
+	//writeSurfaces("mcnpsurfaces.txt", config.geometry);
 
 	printf("# of parts: %d\n", config.geometry.parts.size());
 	printf("# of triangles: %d\n", config.geometry.triangles.size());

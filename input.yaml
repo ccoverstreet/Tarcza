@@ -4,7 +4,7 @@ assemblyFile: "testfiles/Collimator.obj"
 partNameMap:
   "Detector": "Ge"
   "Collimator": "Pb"
-  "Part 4": "VOID"
+  "Part 4": "Al"
 
 materialMap:
   "Ge":
