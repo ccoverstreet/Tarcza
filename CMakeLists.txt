@@ -15,6 +15,7 @@ include_directories(vendor/eigen)
 add_executable(Tarcza)
 add_subdirectory(src)
 target_link_libraries(Tarcza yaml-cpp)
+target_compile_options(Tarcza PRIVATE -march=native)
 
 find_package(OpenMP) # OpenMP support
 if (OpenMP_CXX_FOUND)
